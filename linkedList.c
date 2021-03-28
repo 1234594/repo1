@@ -41,16 +41,15 @@ void DestroyList(LinkedList *L) {
  *	@return		 : Status
  *  @notice      : None
  */
-Status InsertList(LNode *p, LNode *q) {
-    //p节点不存在，无意义
-    if(!p) {
-        return ERROR;
-    }
+Status InsertList(LNode *p, LNode *q)
+{   //如果p结点不存在，返回错误
+	if(!p)
+		return ERROR;
     q->next = p->next;
     p->next = q;
-    return SUCCESS;
-
+	return SUCCESS;
 }
+
 /**
  *  @name        : Status DeleteList(LNode *p, ElemType *e)
  *	@description : delete the first node after the node p and assign its value to e
@@ -59,14 +58,14 @@ Status InsertList(LNode *p, LNode *q) {
  *  @notice      : None
  */
 Status DeleteList(LNode *p, ElemType *e) {
-    if(p->next) {
-        LNode *next  = p->next;
-        p->next = p->next->next;
-        *e = next->data;
-        free(p->next);
-        return SUCCESS;
-    }
-    return ERROR;
+    if(!p && !p->next)
+		return ERROR;
+	LNode *q;
+	q = p->next;
+	*e = q->data;		//记得调用前检查e是否有指向一个已知的内存空间
+	p->next = q->next;
+	free(q);
+	return SUCCESS;
 }
 
 /**
@@ -135,7 +134,6 @@ Status ReverseList(LinkedList *L) {
         pre = cur;
         cur = p;
     }
-
     *L = pre;
     return SUCCESS;
 }
@@ -179,21 +177,21 @@ Status IsLoopList(LinkedList L) {
  *  @notice      : choose to finish
  */
 LNode* ReverseEvenList(LinkedList *L) {
-    int flag = 0;
-    LNode *newHead  = NULL;
-    while((*L)->next) {
-        //用于记录是不是第一次，第一次的话就给出新的头节点，后续头节点不变
-        if(flag == 0) {
-           newHead = (*L)->next;
-            flag = 1;
-        }
-        LNode *temp = (*L)->next;
-        (*L)->next = temp->next;
-        temp->next = (*L);
-        L = (*L)->next;
-        return newHead;
-    }
-    return L;
+    LNode *pre, *cur, *Next;
+	pre = *L;
+	*L = pre->next;
+	while(pre && pre->next){
+		cur = pre->next;
+		Next = cur->next;
+		if(cur->next && cur->next->next){			//如果cur->next不存在，结点个数为偶数
+			pre->next = cur->next->next;			//如果cur->next->next不存在，结点个数为奇数
+		}else{										//如果都存在，遍历未结束
+			pre->next = cur->next;
+		}
+		cur->next = pre;							//将偶数结点反转
+		pre = Next;
+	}
+	return *L;
 }
 
 /**
@@ -204,17 +202,16 @@ LNode* ReverseEvenList(LinkedList *L) {
  *  @notice      : choose to finish
  */
 LNode* FindMidNode(LinkedList *L) {
-    if(L == NULL) {
-        return ERROR;
-    }
-    LNode *fast = L;
-    LNode *slow = L;
-    while(fast->next) {
-        //快的指针走2步，慢的指针走一步
-        if(fast->next->next) {
-            fast = fast->next->next;
-            slow = slow->next;
-        }
-    }
-    return slow;
+
+    LNode *mid = *L;
+	int cnt;
+	//记录链表总长度
+	for(cnt=0; mid; cnt++)
+		mid = mid->next;
+	mid = *L;
+	//总长度的一半
+	for(int i=0; i<cnt/2; i++)
+		mid = mid->next;
+	return mid;
+
 }

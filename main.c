@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "linkedList.h"
+
 int main(){
     //找到节点
     LNode *findNode();
@@ -10,9 +11,10 @@ int main(){
     void output();
     //输入想要删除或者插入的第几个节点
     int inputNum();
-    LinkedList *head = NULL;
+    LinkedList head = NULL;
     //接受的值，用于删除
     int receiveNumber;
+    void printf_Node(LNode* node);
     int choose;
 
     while(1) {
@@ -29,20 +31,33 @@ int main(){
         printf("***********     10.查找中间节点       ***********\n");
         printf("Please choose:");
         scanf("%d",&choose);
-
         switch(choose) {
             case 0 : return;
             case 1 : output(InitList(&head)); break;
             case 2 : DestroyList(&head); break;
-            case 3 : output(InsertList(findNode(&head),insertNode()));break;
-            case 4 : output(DeleteList(findNode(&head),&receiveNumber)); printf("接受到的值是：%d",receiveNumber); break;
+            case 3 : output(InsertList(findNode(head),insertNode() ));break;
+            case 4 : output(DeleteList(findNode(head),&receiveNumber));
+                     printf("接受到的值是：%d",receiveNumber);
+                     break;
             case 5 : TraverseList(head,visit); break;
             case 6 : output(SearchList(head,inputNum())); break;
-            case 7 : ReverseList(head); break;
-            case 8 : IsLoopList(head); break;
-            case 9 : ReverseEvenList(&head); break;
-            case 10: FindMidNode(&head); break;
-            default  : printf("******input error******\n");
+            case 7 : printf("反转前：");
+                     TraverseList(head,visit);
+                     output(ReverseList(&head));
+                     printf("反转后：");
+                     TraverseList(head,visit);
+                     break;
+            case 8 : output(IsLoopList(head));
+                     printf("成环为success，不成环为error");
+                     break;
+            case 9 : printf("置换前：");
+                     TraverseList(head,visit);
+                     ReverseEvenList(&head);
+                      printf("置换后：");
+                     TraverseList(head,visit);
+                     break;
+            case 10: printf_Node(FindMidNode(&head)); break;
+            default: printf("******input error******\n");
         }
         printf("\n please press any key to continue...\n");
         getch();
@@ -53,19 +68,21 @@ int main(){
  *	@description : 传入头节点，根据输入的number，返回第number个节点
  *	@param		 : L(the head node)
 */
-LNode *findNode(LinkedList *L) {
+LNode *findNode(LinkedList L) {
     int num;
     printf("请输入您想要被插入的是第几个节点或者删除第几个节点后面那个节点");
     scanf("%d",&num);
-	while(*L){
+    if(num == 0) {
+        return L;
+    }
+	while(L){
 		if(!(--num)) {
-            LNode *returnNode = *L;
+            LNode *returnNode = L;
             return returnNode;
         }
 		else
-			(*L) = (*L)->next;
+			L = L->next;
 	}
-	return NULL;
 }
 
 
@@ -82,9 +99,9 @@ LNode* insertNode() {
 
 void output(int num) {
     if(num == 1) {
-        printf("SUCCESS\n");
+        printf("\n***SUCCESS***\n");
     } else if(num == 0) {
-        printf("ERROR\n");
+        printf("\n***ERROR***\n");
     }
 
 }
@@ -92,7 +109,12 @@ void output(int num) {
 
 int inputNum() {
     int num;
-    printf("输出您想删除或者查找的第几个节点");
+    printf("输出您想删除的第几个节点\\\\根据Element的值查找节点");
     scanf("%d",&num);
     return num;
 }
+
+
+ void printf_Node(LNode *node) {
+    printf("%d",(*node).data);
+ }
